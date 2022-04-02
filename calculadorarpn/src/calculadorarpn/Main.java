@@ -25,7 +25,7 @@ public class Main {
 				
 				boolean isADigit = expressaorpn[i].matches("[0-9]*"); 
 				if(isADigit) {
-					stack.push(expressaorpn[i])
+					stack.push(expressaorpn[i]);
 				}else{
 
 					if ("-+/*".contains(expressaorpn[i])) {
@@ -52,7 +52,7 @@ public class Main {
 				}
 
 			} else {
-				output = stack.pop();
+				saida = stack.pop();
 				System.out.println("O resultado da expressao" + contador + " no RPN eh: " + saida);
 				contador++;
 			}
@@ -60,7 +60,7 @@ public class Main {
 			i++;
 		}
 
-		output = stack.pop();
+		saida = stack.pop();
 		System.out.println("O resultado da expressao" + contador + " no RPN eh: " + saida);
 	}
 }
