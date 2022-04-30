@@ -1,66 +1,60 @@
 package calculadorarpn;
-
-import java.util.Stack;
-import java.nio.file.Files;
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-
+import java.util.*;
+import java.io.*;
 public class Main {
 
-	public static void main(String[] args) throws IOException {
-		Stack<String> stack = new Stack<String>();
+	public static void main(String[] args) throws Exception {     
+        File RPN = new File("C:/Users/LeydsonMaycksonFerra/Documents/Compiladores/calculadorarpn/calculadoraRPN-Compiladores/calculadorarpn/Calc1.stk");
+        Scanner in = new Scanner(RPN); 
+        Stack<Integer> pile = new Stack<Integer>();
+        int result=0;
+        
+        List<Token> tokens=new ArrayList<Token>();  
 
-		File arquivo = new File("Calc1.stk");
-		byte[] bytes = Files.readAllBytes(arquivo.toPath());
-		String expressaorpn[] = new String(bytes).split("\n");
-		int contador = 1;
-		String saida;
+        while (in.hasNext()) {
+                String line = in.nextLine();
+                
+                if (isNumeric(line)) {
+                    tokens.add(new Token(TokenType.NUM,line));
+                    int num = Integer.parseInt(line) ;
+                    pile.push(num);
+                }
+                else {
+                    if (line.equals("+")) {
+                        tokens.add(new Token(TokenType.PLUS,line));
+                        int num2 = pile.pop();
+                        int num1 = pile.pop();
+                        result = num1+num2;
+                    }
+                    else if (line.equals("-")) {
+                        tokens.add(new Token(TokenType.MINUS,line));
+                        int num2 = pile.pop();
+                        int num1 = pile.pop();
+                        result = num1-num2;
+                    }
+                    else if (line.equals("*")) {
+                        tokens.add(new Token(TokenType.STAR,line));
+                        int num2 = pile.pop();
+                        int num1 = pile.pop();
+                        result = num1*num2;
+                    }
+                    else if (line.equals("/")) {
+                        tokens.add(new Token(TokenType.SLASH,line));
+                        int num2 = pile.pop();
+                        int num1 = pile.pop();
+                        result = num1/num2;
+                    }
+                    else {
+                        throw new Exception("Unexpected character: " + line); 
+                    }
+                    pile.push(result);
+                }
+        }
+        System.out.println(pile.pop());
+        System.out.println(tokens);
+    } 
 
-	
-		int i = 0;
-
-		while (i < expressaorpn.length) {
-			if (!expressaorpn[i].equals("=")) {
-				
-				boolean isADigit = expressaorpn[i].matches("[0-9]*"); 
-				if(isADigit) {
-					stack.push(expressaorpn[i]);
-				}else{
-
-					if ("-+/*".contains(expressaorpn[i])) {
-						
-						BigDecimal direita = new BigDecimal(stack.pop());
-						BigDecimal esquerda = new BigDecimal(stack.pop());
-
-						switch (expressaorpn[i]) {
-						case "+":
-							stack.push(esquerda.add(direita).toString());
-							return;
-						case "-":
-							stack.push(esquerda.subtract(direita).toString());
-							return;
-						case "*":
-							stack.push(esquerda.multiply(direita).toString());
-							return;
-						case "/":
-							stack.push(esquerda.divide(direita).toString());
-							return;
-						}
-					}
-
-				}
-
-			} else {
-				saida = stack.pop();
-				System.out.println("O resultado da expressao" + contador + " no RPN eh: " + saida);
-				contador++;
-			}
-
-			i++;
-		}
-
-		saida = stack.pop();
-		System.out.println("O resultado da expressao" + contador + " no RPN eh: " + saida);
-	}
+    private static boolean isNumeric(String str){
+        return str != null && str.matches("[0-9.]+");
+    }
 }
