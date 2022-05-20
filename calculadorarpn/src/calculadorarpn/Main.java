@@ -6,51 +6,69 @@ public class Main {
 	public static void main(String[] args) throws Exception {     
         File RPN = new File("C:/Users/LeydsonMaycksonFerra/Documents/Compiladores/calculadorarpn/calculadoraRPN-Compiladores/calculadorarpn/Calc1.stk");
         Scanner in = new Scanner(RPN); 
+        List<Token> tokens=new ArrayList<Token>();
         Stack<Integer> pile = new Stack<Integer>();
-        int result=0;
-        
-        List<Token> tokens=new ArrayList<Token>();  
+        Token token = new Token(null,null);
+        int result=0, i=0, num1=0, num2=0;        
+          
 
         while (in.hasNext()) {
-                String line = in.nextLine();
+            String line = in.nextLine();
                 
-                if (isNumeric(line)) {
-                    tokens.add(new Token(TokenType.NUM,line));
-                    int num = Integer.parseInt(line) ;
-                    pile.push(num);
+            if (isNumeric(line)) {
+                tokens.add(new Token(TokenType.NUM,line));
+            }
+            else {
+                if (line.equals("+")) {
+                    tokens.add(new Token(TokenType.PLUS,line));
+                }
+                else if (line.equals("-")) {
+                    tokens.add(new Token(TokenType.MINUS,line));
+                }
+                else if (line.equals("*")) {
+                    tokens.add(new Token(TokenType.STAR,line));
+                }
+                else if (line.equals("/")) {
+                    tokens.add(new Token(TokenType.SLASH,line));
                 }
                 else {
-                    if (line.equals("+")) {
-                        tokens.add(new Token(TokenType.PLUS,line));
-                        int num2 = pile.pop();
-                        int num1 = pile.pop();
-                        result = num1+num2;
-                    }
-                    else if (line.equals("-")) {
-                        tokens.add(new Token(TokenType.MINUS,line));
-                        int num2 = pile.pop();
-                        int num1 = pile.pop();
-                        result = num1-num2;
-                    }
-                    else if (line.equals("*")) {
-                        tokens.add(new Token(TokenType.STAR,line));
-                        int num2 = pile.pop();
-                        int num1 = pile.pop();
-                        result = num1*num2;
-                    }
-                    else if (line.equals("/")) {
-                        tokens.add(new Token(TokenType.SLASH,line));
-                        int num2 = pile.pop();
-                        int num1 = pile.pop();
-                        result = num1/num2;
-                    }
-                    else {
-                        throw new Exception("Unexpected character: " + line); 
-                    }
-                    pile.push(result);
+                    throw new Exception("Unexpected character: " + line); 
                 }
+            }
         }
-        System.out.println(pile.pop());
+
+        while (i < tokens.size()) {
+            token = tokens.get(i);
+
+            if (token.type == TokenType.NUM) {;
+                pile.push(Integer.parseInt(token.lexeme));
+            }
+            else {
+                if (token.type == TokenType.PLUS) {
+                    num2 = pile.pop();
+                    num1 = pile.pop();
+                    result = num1+num2;
+                }
+                if (token.type == TokenType.MINUS) {
+                    num2 = pile.pop();
+                    num1 = pile.pop();
+                    result = num1-num2;
+                }
+                if (token.type == TokenType.STAR) {
+                    num2 = pile.pop();
+                    num1 = pile.pop();
+                    result = num1*num2;
+                }
+                if (token.type == TokenType.SLASH) {
+                    num2 = pile.pop();
+                    num1 = pile.pop();
+                    result = num1/num2;
+                }
+                pile.push(result);
+            }
+            i++;
+        }
+         System.out.println(pile.pop());
         System.out.println(tokens);
     } 
 
